@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:5173",                     // dev frontend
-                        "https://your-production-frontend.com"     // replace with your prod frontend
+                        "https://fanciful-profiterole-a7dbca.netlify.app"     // replace with your prod frontend
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")

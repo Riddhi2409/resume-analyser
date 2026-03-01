@@ -1,17 +1,28 @@
-# Use official OpenJDK image
-FROM eclipse-temurin:17-jdk
+# ---------- BUILD STAGE ----------
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY . .
+# Copy pom first (better caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Build the app
-RUN ./mvnw clean package -DskipTests
+# Copy remaining source code
+COPY src ./src
 
-# Expose port
+# Build the application
+RUN mvn clean package -DskipTests
+
+
+# ---------- RUN STAGE ----------
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+# Copy built jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Render provides dynamic PORT
 EXPOSE 8080
 
-# Run jar
-CMD ["java", "-jar", "target/your-app-name-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]
